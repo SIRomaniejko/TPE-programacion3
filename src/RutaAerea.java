@@ -6,6 +6,11 @@ public class RutaAerea {
 	boolean esCabotaje;
 	HashMap<String, Integer> vuelos;
 	
+	public RutaAerea(double distancia, boolean esCabotaje, HashMap<String, Integer> vuelos){
+		this.distancia = distancia;
+		this.esCabotaje = esCabotaje;
+		this.vuelos = vuelos;
+	}
 	public double getDistancia() {
 		return distancia;
 	}
