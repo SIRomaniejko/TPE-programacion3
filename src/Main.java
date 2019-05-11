@@ -20,6 +20,11 @@ public class Main {
 		}
 		
 		System.out.println(grafo.existeRutaDirecta("John F. Kennedy", "Ministro Pistarini"));
+		Iterator<String> vuelos = grafo.getVuelos("John F. Kennedy", "Ministro Pistarini");
+		while(vuelos.hasNext()){
+			System.out.println(vuelos.next());
+		}
+		grafo.generateGraph(output);
 	}
 
 }

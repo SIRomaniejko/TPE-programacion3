@@ -1,9 +1,10 @@
 import java.util.HashMap;
+import java.util.Iterator;
 
 
 public class RutaAerea {
 	double distancia;
-	boolean esCabotaje;
+	private boolean esCabotaje;
 	HashMap<String, Integer> vuelos;
 	
 	public RutaAerea(double distancia, boolean esCabotaje, HashMap<String, Integer> vuelos){
@@ -14,7 +15,7 @@ public class RutaAerea {
 	public double getDistancia() {
 		return distancia;
 	}
-	public boolean EsCabotaje() {
+	public boolean esCabotaje() {
 		return esCabotaje;
 	}
 	public boolean contieneAerolinea(String aerolinea){
@@ -24,4 +25,7 @@ public class RutaAerea {
 		return vuelos.get(aerolinea);		
 	}
 	
+	public Iterator<String> getVuelos(){
+		return vuelos.keySet().iterator();
+	}
 }
