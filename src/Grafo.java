@@ -87,6 +87,7 @@ public class Grafo {
 		return this.rutas[this.identificadores.get(origen)][this.identificadores.get(destino)] != null;
 	}
 	
+	
 	public Iterator<String> getReservas(){
 		LinkedList<String> regreso = new LinkedList<String>();
 		for(Reserva reserva: reservas){
@@ -96,7 +97,23 @@ public class Grafo {
 	}
 	
 	public Iterator<String> servicio1(String origen, String destino, String aerolinea){
-		return null;
+		
+		ArrayList<String> salida = new ArrayList<String>();
+		if (this.existeRutaDirecta(origen, destino)) {
+			salida.add("Existe una ruta directa para el origen "+origen+" y destino "+destino);
+			salida.add("La distancia es de "+this.rutas[this.identificadores.get(origen)][this.identificadores.get(destino)].getDistancia()+ " km");
+			int asientos = this.rutas[this.identificadores.get(origen)][this.identificadores.get(destino)].asientosPorAerolinea(aerolinea);
+			for(Reserva reserva: reservas){
+				if ((reserva.getOrigen() == origen) && (reserva.getDestino() == destino) && (reserva.getEmpresa() == aerolinea)){
+					asientos -= reserva.getCantidad();
+				}
+			}	
+			salida.add("La cantidad de asientos disponibles es "+ asientos);
+		}
+		else {
+			salida.add("No existe ruta directa para el origen y destino especificados");
+		}
+		return salida.iterator();
 	}
 	
 	public Iterator<String> servicio2(String origen, String destino, String aerolineaEvitar){

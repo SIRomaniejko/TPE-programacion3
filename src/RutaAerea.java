@@ -20,4 +20,8 @@ public class RutaAerea {
 	public boolean contieneAerolinea(String aerolinea){
 		return vuelos.get(aerolinea) != null;
 	}
+	public int asientosPorAerolinea(String aerolinea) {
+		return vuelos.get(aerolinea);		
+	}
+	
 }
