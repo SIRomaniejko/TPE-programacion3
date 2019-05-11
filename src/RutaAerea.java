@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.Iterator;
 
 
 public class RutaAerea {
@@ -19,5 +20,9 @@ public class RutaAerea {
 	}
 	public boolean contieneAerolinea(String aerolinea){
 		return vuelos.get(aerolinea) != null;
+	}
+	
+	public Iterator<String> getVuelos(){
+		return vuelos.keySet().iterator();
 	}
 }

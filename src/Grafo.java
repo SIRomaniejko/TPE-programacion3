@@ -21,6 +21,7 @@ public class Grafo {
 		
 		aeropuertos = new ArrayList<Aeropuerto>();
 		identificadores = new HashMap<String, Integer>();
+		//carga del aeropuerto y los identificadores
 	    try (BufferedReader br = new BufferedReader(new FileReader((pathRootFolder + "Aeropuertos.csv")))) {
 			    int idAeropuerto = 0;
 		        while ((line = br.readLine()) != null) {						                    // mientras haya lineas para leer en el csv		
@@ -39,9 +40,7 @@ public class Grafo {
 		        e.printStackTrace();
 		        rutas = new RutaAerea[0][0];
 	    }
-	    
-	    
-	    ArrayList<RutaAerea> listaRutas= new ArrayList<RutaAerea>();
+	    //creacion de rutasAereas y su carga en la matriz ruta
 	    try (BufferedReader br = new BufferedReader(new FileReader(pathRootFolder + "Rutas.csv"))) {
 	        while ((line = br.readLine()) != null) {
 	            String[] items = line.split(cvsSplitBy);
@@ -64,7 +63,7 @@ public class Grafo {
 	        e.printStackTrace();
 	    }
 	    this.reservas = new ArrayList<Reserva>();
-	    
+	    //carga de las reservas en la lista
 	    try (BufferedReader br = new BufferedReader(new FileReader(pathRootFolder + "Reservas.csv"))) {                                                              // salteo el encabezado
 	        while ((line = br.readLine()) != null) {						                    // mientras haya lineas para leer en el csv		
 	            String[] items = line.split(cvsSplitBy);
@@ -105,5 +104,9 @@ public class Grafo {
 	
 	public Iterator<String> servicio3(String paisA, String paisB){
 		return null;
+	}
+	
+	public Iterator<String>getVuelos(String origen, String destino){
+		return this.rutas[this.identificadores.get(origen)][this.identificadores.get(destino)].getVuelos();
 	}
 }
