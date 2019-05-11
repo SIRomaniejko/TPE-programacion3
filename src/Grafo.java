@@ -5,11 +5,16 @@ import java.util.LinkedList;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+
 
 
 public class Grafo {
 	ArrayList<Aeropuerto> aeropuertos;
 	HashMap<String, Integer> identificadores;
+	HashMap<Integer, String> identificadorToName;
 	ArrayList<Reserva> reservas;
 	RutaAerea[][] rutas;
 	
@@ -21,6 +26,7 @@ public class Grafo {
 		
 		aeropuertos = new ArrayList<Aeropuerto>();
 		identificadores = new HashMap<String, Integer>();
+		identificadorToName = new HashMap<Integer, String>();
 		//carga del aeropuerto y los identificadores
 	    try (BufferedReader br = new BufferedReader(new FileReader((pathRootFolder + "Aeropuertos.csv")))) {
 			    int idAeropuerto = 0;
@@ -31,7 +37,9 @@ public class Grafo {
 		            String pais = items[2];
 		            Aeropuerto nuevo = new Aeropuerto(nombre, ciudad, pais);
 		            aeropuertos.add(nuevo);
-		            identificadores.put(nombre, idAeropuerto++);
+		            identificadores.put(nombre, idAeropuerto);
+		            identificadorToName.put(idAeropuerto++, nombre);
+		            
 		        }
 		        rutas = new RutaAerea[idAeropuerto+1][idAeropuerto+1];
 		        
@@ -48,6 +56,9 @@ public class Grafo {
 	            int destino = identificadores.get(items[1]);
 	            double distancia = Double.parseDouble(items[2]);
 	            boolean esCabotaje = items[3] == "1"; 
+	            if(items[3] == "1"){
+	            	System.out.println("escabotaje");
+	            }
 	            String aeroLineas = items[4].replace("{","");
 	            aeroLineas = aeroLineas.replace("}","");
 	            String[] aeroLinea = aeroLineas.split(",");
@@ -108,5 +119,54 @@ public class Grafo {
 	
 	public Iterator<String>getVuelos(String origen, String destino){
 		return this.rutas[this.identificadores.get(origen)][this.identificadores.get(destino)].getVuelos();
+	}
+	
+	public void generateGraph(String rootpath){
+		BufferedWriter bw = null;
+		try {
+			File file = new File(rootpath + "graph.txt");
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+
+			FileWriter fw = new FileWriter(file);
+			bw = new BufferedWriter(fw);
+
+			// Escribo la primer linea del archivo
+			String linea =  "digraph{" +  getGrafos() + "}";
+			bw.write(linea);
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		} finally {
+			try {
+				if (bw != null)
+					bw.close();
+			} catch (Exception ex) {
+				System.out.println("Error cerrando el BufferedWriter" + ex);
+			}
+		}
+		
+	}
+	
+	private String getGrafos(){
+		String regreso = "";
+		Iterator<String> aeropuertos = getAeropuertos();
+		while(aeropuertos.hasNext()){
+			String aeropuerto = aeropuertos.next();
+			for(int x = 0; x < rutas.length; x++){
+				if(rutas[this.identificadores.get(aeropuerto)][x] != null){
+					String cabotaje = "";
+					if(rutas[this.identificadores.get(aeropuerto)][x].esCabotaje()){
+						cabotaje = "cabotaje";
+					}
+					else{
+						cabotaje = "internacional";
+					}
+					String pesos = rutas[this.identificadores.get(aeropuerto)][x].getDistancia() + ", " + cabotaje;
+					regreso += aeropuerto.replace("-", " ").replace(" ", "").replace(".", "") + " -> " + identificadorToName.get(x).replace("-", " ").replace(" ", "").replace(".", "") + "[label=\"" + pesos +"\"];";
+				}
+			}
+		}
+		return regreso;
 	}
 }

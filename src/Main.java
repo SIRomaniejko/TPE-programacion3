@@ -24,7 +24,7 @@ public class Main {
 		while(vuelos.hasNext()){
 			System.out.println(vuelos.next());
 		}
-		
+		grafo.generateGraph(output);
 	}
 
 }

@@ -15,4 +15,6 @@ public class Reserva {
 	public String toString(){
 		return "origen: " + this.origen + "; destino: " + this.destino + "; empresa: " + this.empresa + "; cantidad: " + this.cantidad;
 	}
+	
+	
 }
