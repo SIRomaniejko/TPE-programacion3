@@ -86,7 +86,11 @@ public class Grafo {
 	            String empresa = items[2];
 	            int cantidad = Integer.parseInt(items[3]);
 	            this.reservas.put(origen+"-"+destino+"-"+empresa, cantidad);
+	            RutaAerea ruta = this.rutas[this.identificadores.get(origen)][this.identificadores.get(destino)];
+	            if(ruta != null){
+	            	ruta.restarAsientos(empresa, cantidad);
 	            }
+	        }
 	    } catch (IOException e) {
 	        e.printStackTrace();
 	    }
@@ -119,30 +123,26 @@ public class Grafo {
 	}
 	
 	public Iterator<String> servicio1(String origen, String destino, String aerolinea){
-		
 		ArrayList<String> salida = new ArrayList<String>();
-		if (this.existeRutaDirecta(origen, destino)) {
+		if (this.existeRutaDirecta(origen, destino) && getRutaAerea(origen, destino).contieneAerolinea(aerolinea)) {
 			salida.add("Existe una ruta directa para el origen "+origen+" y destino "+destino);
 			salida.add("La distancia es de "+this.rutas[this.identificadores.get(origen)][this.identificadores.get(destino)].getDistancia()+ " km");
 			int asientos = this.rutas[this.identificadores.get(origen)][this.identificadores.get(destino)].asientosPorAerolinea(aerolinea);
-			Integer asientosReservados = reservas.get(origen+"-"+destino+"-"+aerolinea);
-			if(asientosReservados != null){
-				asientos -= asientosReservados;
-			}	
 			salida.add("La cantidad de asientos disponibles es "+ asientos);
 		}
 		else {
-			salida.add("No existe ruta directa para el origen y destino especificados");
+			salida.add("No existe ruta directa para el origen y destino, con la aerolinea especificada");
 		}
 		return salida.iterator();
 	}
 	
-	public Iterator<String> servicio2suposicionInicial(String origen, String destino, String aerolineaEvitar){
+	
+	public Iterator<String> servicio2(String origen, String destino, String aerolineaEvitar){
 		
 		int idOrigen = this.identificadores.get(origen);
 		int idDestino = this.identificadores.get(destino);
-		boolean[] aerolineasExploradas = new boolean[this.aeropuertos.size()];
-		ArrayList<Stack<HashMap<String, Object>>> rutas = this.back(idOrigen, idOrigen, idDestino, aerolineaEvitar, aerolineasExploradas);
+		boolean[] aeropuertosExplorados = new boolean[this.aeropuertos.size()];
+		ArrayList<Stack<HashMap<String, Object>>> rutas = this.back(idOrigen, idOrigen, idDestino, aerolineaEvitar, aeropuertosExplorados);
 		ArrayList<String> regreso = new ArrayList<String>();
 		int numRecorrido = 1;
 		for(Stack<HashMap<String, Object>> recorrido: rutas){
@@ -155,14 +155,15 @@ public class Grafo {
 		return regreso.iterator();
 	}
 	
-	protected ArrayList<Stack<HashMap<String, Object>>> back(int idActual, int idAnterior, int idDestino,String aerolineaEvitar, boolean[] aerolineasRecorridas){
-		//problema para calcular la distancia
+	protected ArrayList<Stack<HashMap<String, Object>>> back(int idActual, int idAnterior, int idDestino, String aerolineaEvitar, boolean[] aeropuertosExplorados){
+		
 		ArrayList<Stack<HashMap<String, Object>>>regreso = new ArrayList<Stack<HashMap<String, Object>>>();
+		
 		String aerolineas = null;
 		if(this.rutas[idAnterior][idActual] != null){
 			aerolineas = this.rutas[idAnterior][idActual].getAerolineasDisponiblesMenos(aerolineaEvitar);
 		}
-		if(aerolineas == null && idActual != idAnterior || aerolineasRecorridas[idActual]){
+		if(aerolineas == null && idActual != idAnterior || aeropuertosExplorados[idActual]){
 			return regreso;
 		}
 		if(idActual == idDestino){ //el top tiene que traer la distancia
@@ -179,11 +180,8 @@ public class Grafo {
 			for(int x = 0; x < aeropuertos.size(); x++){
 				if(this.rutas[idActual][x] != null ){ //falta verificar que haya vuelos disponibles
 					
-					aerolineasRecorridas[idActual] = true;
-					ArrayList<Stack<HashMap<String, Object>>> respuestaBack = this.back(x, idActual, idDestino, aerolineaEvitar, aerolineasRecorridas);
-					if(!respuestaBack.isEmpty()){
-						System.out.println("vacio");
-					}
+					aeropuertosExplorados[idActual] = true;
+					ArrayList<Stack<HashMap<String, Object>>> respuestaBack = this.back(x, idActual, idDestino, aerolineaEvitar, aeropuertosExplorados);
 					if(!respuestaBack.isEmpty()){
 						if(idActual != idAnterior){ 
 							for(Stack<HashMap<String, Object>> recorrido: respuestaBack){
@@ -197,40 +195,19 @@ public class Grafo {
 						}
 						regreso.addAll(respuestaBack);
 					}
-					aerolineasRecorridas[idActual] = false;
+					aeropuertosExplorados[idActual] = false;
 				}
 			}
 		}
 		return regreso;
 	}
 	
-	/*public Iterator<String> servicio2porAerolinea(String origen, String destino, String aerolineaEvitar){
-		ArrayList<String> regreso = new ArrayList<String>();
-		int idOrigen = this.identificadores.get(origen);
-		int idDestino = this.identificadores.get(destino);
-		HashSet<Integer> conjuntoExplorado = new HashSet<Integer>();
-		back(idOrigen, -1, conjuntoExplorado, idDestino, aerolineaEvitar, regreso, null, 0, 0);
-		return regreso.iterator();
-	}
-	protected void back(int aeropuertoActual, int aeropuertoAnterior, HashSet<Integer>conjuntoExplorado, int aeropuertoDestino, String aerolineaEvitar, ArrayList<String> regreso, ArrayList<String> aerolineasActuales, int saltos, double distancia){
-		if(aeropuertoActual == aeropuertoDestino){
-			Stack
-			for(String aerolinea: aerolineasActuales){
-				regreso.add("aerolinea: " + aerolinea + " - distancia: " + distancia + "km - saltos: " + saltos);
-			}
-			regreso.addAll(aerolineasActuales);
-		}
-		if(aerolineasActuales == null){
-			//aerolineasActuales
-		}
-	}*/
-	
 	public Iterator<String> servicio3(String paisA, String paisB){
 		return null;
 	}
 	
-	public Iterator<String>getVuelos(String origen, String destino){
-		return this.rutas[this.identificadores.get(origen)][this.identificadores.get(destino)].getVuelos();
+	public Iterator<String>getAerolineas(String origen, String destino){
+		return this.rutas[this.identificadores.get(origen)][this.identificadores.get(destino)].getAerolineas();
 	}
 	
 	public void generateGraph(String rootpath){
@@ -258,6 +235,10 @@ public class Grafo {
 			}
 		}
 		
+	}
+	
+	protected RutaAerea getRutaAerea(String origen, String destino){
+		return this.rutas[this.identificadores.get(origen)][this.identificadores.get(destino)];
 	}
 	
 	private String getGrafos(){

@@ -11,9 +11,9 @@ public class Main {
 		// TODO Auto-generated method stub
 		Grafo grafo = new Grafo(input);
 		grafo.generateGraph(output);
-		Iterator<String> respuesta = grafo.servicio1("John F. Kennedy", "Ministro Pistarini", "United Airlines");
-		
-		Iterator<String> regreso = grafo.servicio2suposicionInicial("John F. Kennedy", "Ministro Pistarini", "d");
+		Iterator<String> respuesta = grafo.servicio1("Westchester", "Logan", "United Ailines");
+
+		Iterator<String> regreso = grafo.servicio2("John F. Kennedy", "Ministro Pistarini", "LATAM");
 		while(regreso.hasNext()){
 			System.out.println(regreso.next());
 		}
