@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Set;
 import java.util.Stack;
 import java.io.BufferedReader;
@@ -104,15 +106,6 @@ public class Grafo {
 		return identificadores.keySet().iterator();
 	}
 	
-//	public ArrayList<Aeropuerto> getAeropuertosPorPais(String paisA, String paisB){
-//		ArrayList<Aeropuerto> resultado = new ArrayList<Aeropuerto>();
-//	    for (Aeropuerto aeropuerto : aeropuertos) {
-//	    	if aeropuerto.getCiudad().equals(paisA)
-//	    }
-//		
-//		return resultado;
-//	}
-	
 	public boolean existeRutaDirecta(String origen, String destino){
 		return getRutaAerea(origen, destino) != null;
 	}
@@ -208,29 +201,7 @@ public class Grafo {
 	}
 	
 	public Iterator<String> servicio3(String paisA, String paisB){
-		ArrayList<Aeropuerto> aeropuertosPaisA = new ArrayList<Aeropuerto>();
-		ArrayList<Aeropuerto> aeropuertosPaisB = new ArrayList<Aeropuerto>();
-		ArrayList<String> resultado = new ArrayList<String>();
-		for (Aeropuerto aeropuerto : aeropuertos) {
-	    	if (aeropuerto.getCiudad().equals(paisA)){
-	    		aeropuertosPaisA.add(aeropuerto);
-	    	}
-	    	if (aeropuerto.getCiudad().equals(paisB)){
-	    		aeropuertosPaisB.add(aeropuerto);
-	    	} 	
-	    }
-		for (Aeropuerto aeropuertoA: aeropuertosPaisA) {
-			for (Aeropuerto aeropuertoB: aeropuertosPaisB) {
-				RutaAerea ruta = this.getRutaAerea(aeropuertoA.getNombre(), aeropuertoB.getNombre());
-				if (ruta != null) {
-				   String aerolineas = ruta.getAerolineasDisponiblesMenos("");
-				   if(aerolineas != null) {
-					   resultado.add("Origen: "+aeropuertoA.getNombre()+" Destino: "+aeropuertoB.getNombre()+" Aerolineas con pasajes:"+aerolineas+" Distancia: "+ruta.getDistancia());
-				   }
-			   }
-			}
-		}
-		return resultado.iterator();
+		return null;
 	}
 	
 	public Iterator<String>getAerolineas(String origen, String destino){
