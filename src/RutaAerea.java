@@ -1,5 +1,6 @@
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Set;
 
 
 public class RutaAerea {
@@ -23,6 +24,25 @@ public class RutaAerea {
 	}
 	public int asientosPorAerolinea(String aerolinea) {
 		return vuelos.get(aerolinea);		
+	}
+	public String getAerolineasDisponiblesMenos(String aerolineaResto){
+		Set<String> aerolineas = vuelos.keySet();
+		aerolineas.remove(aerolineaResto);
+		if(aerolineas.size() == 0){
+			return null;
+		}
+		else{
+			for(String aerolinea: aerolineas){
+				if(vuelos.get(aerolinea) <= 0){
+					aerolineas.remove(aerolinea);
+				}
+			}
+			String regreso = "";
+			for(String aerolinea: aerolineas){
+				regreso += aerolinea + "-";
+			}
+			return regreso.substring(0, regreso.length() - 1);
+		}
 	}
 	
 	public Iterator<String> getVuelos(){
