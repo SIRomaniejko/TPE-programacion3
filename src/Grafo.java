@@ -25,8 +25,6 @@ public class Grafo {
 	public Grafo(String pathRootFolder){
 		String line = "";
 		String cvsSplitBy = ";";
-
-		
 		aeropuertos = new ArrayList<Aeropuerto>();
 		identificadores = new HashMap<String, Integer>();
 		identificadorToName = new HashMap<Integer, String>();
@@ -109,7 +107,7 @@ public class Grafo {
 	}
 	
 	public boolean existeRutaDirecta(String origen, String destino){
-		return this.rutas[this.identificadores.get(origen)][this.identificadores.get(destino)] != null;
+		return getRutaAerea(origen, destino) != null;
 	}
 	
 	
