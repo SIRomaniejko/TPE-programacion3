@@ -201,7 +201,29 @@ public class Grafo {
 	}
 	
 	public Iterator<String> servicio3(String paisA, String paisB){
-		return null;
+		ArrayList<Aeropuerto> aeropuertosPaisA = new ArrayList<Aeropuerto>();
+		ArrayList<Aeropuerto> aeropuertosPaisB = new ArrayList<Aeropuerto>();
+		ArrayList<String> resultado = new ArrayList<String>();
+		for (Aeropuerto aeropuerto : aeropuertos) {
+	    	if (aeropuerto.getCiudad().equals(paisA)){
+	    		aeropuertosPaisA.add(aeropuerto);
+	    	}
+	    	if (aeropuerto.getCiudad().equals(paisB)){
+	    		aeropuertosPaisB.add(aeropuerto);
+	    	} 	
+	    }
+		for (Aeropuerto aeropuertoA: aeropuertosPaisA) {
+			for (Aeropuerto aeropuertoB: aeropuertosPaisB) {
+				RutaAerea ruta = this.getRutaAerea(aeropuertoA.getNombre(), aeropuertoB.getNombre());
+				if (ruta != null) {
+				   String aerolineas = ruta.getAerolineasDisponiblesMenos("");
+				   if(aerolineas != null) {
+					   resultado.add("Origen: "+aeropuertoA.getNombre()+" Destino: "+aeropuertoB.getNombre()+" Aerolineas con pasajes:"+aerolineas+" Distancia: "+ruta.getDistancia());
+				   }
+			   }
+			}
+		}
+		return resultado.iterator();
 	}
 	
 	public Iterator<String>getAerolineas(String origen, String destino){
