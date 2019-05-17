@@ -3,16 +3,16 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 
 
 public class Main {
-	
+	public static String output = "output/";
+	public static String input = "input/";
 	public static void main(String[] args) throws IOException {
-		String output = "output/";
-		String input = "input/";
 		Grafo grafo = new Grafo(input);
 		String entrada = "start";
-		Iterator<String> respuesta = null;
 		String origen;
 		String destino;
 		String aerolinea;
@@ -62,12 +62,41 @@ public class Main {
 				paisB = leerEntrada();
 				printRespuesta(grafo.servicio3(paisA, paisB));
 			}
-			leerEntrada();
+			if(!entrada.equals("esc")){
+				leerEntrada();
+			}
 		}
 	}
 	public static void printRespuesta(Iterator<String> respuesta){
-		while(respuesta.hasNext()){
-			System.out.println(respuesta.next());
+		BufferedWriter bw = null;
+		int numUso = 0;
+		try {
+			File file = new File(output + "log" + numUso + ".txt");
+			while(file.exists()){
+				numUso++;
+				file = new File(output + "log" + numUso + ".txt");
+			}
+			file.createNewFile();
+
+
+			FileWriter fw = new FileWriter(file);
+			bw = new BufferedWriter(fw);
+			
+			while(respuesta.hasNext()){
+				String contenidoLinea1 = respuesta.next();
+				System.out.println(contenidoLinea1);
+				bw.newLine();
+				bw.write(contenidoLinea1);
+			}
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		} finally {
+			try {
+				if (bw != null)
+					bw.close();
+			} catch (Exception ex) {
+				System.out.println("Error cerrando el BufferedWriter" + ex);
+			}
 		}
 	}
 	
