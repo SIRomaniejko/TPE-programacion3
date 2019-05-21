@@ -215,10 +215,10 @@ public class Grafo {
 		ArrayList<Aeropuerto> aeropuertosPaisB = new ArrayList<Aeropuerto>();
 		ArrayList<String> resultado = new ArrayList<String>();
 		for (Aeropuerto aeropuerto : aeropuertos) {
-	    	if (aeropuerto.getCiudad().equals(paisA)){
+	    	if (aeropuerto.getPais().equals(paisA)){
 	    		aeropuertosPaisA.add(aeropuerto);
 	    	}
-	    	if (aeropuerto.getCiudad().equals(paisB)){
+	    	if (aeropuerto.getPais().equals(paisB)){
 	    		aeropuertosPaisB.add(aeropuerto);
 	    	} 	
 	    }
