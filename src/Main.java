@@ -8,18 +8,17 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 
 
 public class Main {
 	public static String output = "output/";
-	public static String input = "input/";
-	public static Grafo gr;
+	public static String input = "input2/";
+	public static Grafo grafo;
 	public static String line = "";
 	public static String cvsSplitBy = ";";
 	
 	public static void main(String[] args) throws IOException {
-		gr = cargarGrafo();
+		grafo = cargarGrafo();
 	    cargarRutas();
 	    cargarReservas();
 	    String entrada = "start";
@@ -35,17 +34,19 @@ public class Main {
 			System.out.println("3. servicio 1: verificar vuelo directo");
 			System.out.println("4. servicio 2: obtener recorridos posibles sin aerolinea");
 			System.out.println("5. servicio 3: vuelos disponibles entre dos paises");
-			System.out.println("6. generar archivo con grafo");
+			System.out.println("6. recorrer todos aeropuertos Greedy");
+			System.out.println("7. recorrer todos aeropuertos Backtracking");
+			System.out.println("create. generar archivo para visualizar grafo");
 			System.out.println("esc. cerrar el programa");
 			entrada = leerEntrada();
 			switch(entrada){
 			case "esc":
 				break;
 			case "1":
-				printRespuesta(gr.getAeropuertos());
+				printRespuesta(grafo.getAeropuertos());
 				break;
 			case "2":
-				printRespuesta(gr.getReservas());
+				printRespuesta(grafo.getReservas());
 				break;
 			case "3":
 				System.out.println("entrar aeropuerto origen");
@@ -54,7 +55,7 @@ public class Main {
 				destino = leerEntrada();
 				System.out.println("entrar aerolinea");
 				aerolinea = leerEntrada();
-				printRespuesta(gr.servicio1(origen, destino, aerolinea));
+				printRespuesta(grafo.servicio1(origen, destino, aerolinea));
 				break;
 			case "4":
 				System.out.println("entrar aeropuerto origen");
@@ -63,18 +64,25 @@ public class Main {
 				destino = leerEntrada();
 				System.out.println("entrar aerolinea a evitar");
 				aerolinea = leerEntrada();
-				printRespuesta(gr.servicio2(origen, destino, aerolinea));
+				printRespuesta(grafo.servicio2(origen, destino, aerolinea));
 				break;
 			case "5":
 				System.out.println("entrar pais origen");
 				paisA = leerEntrada();
 				System.out.println("entrar pais destino");
 				paisB = leerEntrada();
-				printRespuesta(gr.servicio3(paisA, paisB));
+				printRespuesta(grafo.servicio3(paisA, paisB));
 			case "6":
-				System.out.println("Generando archivo para ser cargado en Graphviz...");
-                gr.generateGraph(output);	 
-                System.out.println("Archivo creado exitosamente");
+				System.out.println("entrar origen");
+				origen = leerEntrada();
+				printRespuesta(grafo.recorridoMasCortoGreedy(origen));
+				break;
+			case "7":
+				System.out.println("entrar origen");
+				origen = leerEntrada();
+				printRespuesta(grafo.recorridoCortoBacktracking(origen));
+			case "create":
+				grafo.generateGraph(output);
 			}
 			if(!entrada.equals("esc")){
 				leerEntrada();
@@ -122,7 +130,7 @@ public class Main {
 		            	aeroLineasFinal.put(aerolineaFinal[0], Integer.parseInt(aerolineaFinal[1]));
 		            }
 		            RutaAerea nueva = new RutaAerea(distancia, esCabotaje, aeroLineasFinal);
-		            gr.asignacionArco(origen, destino, nueva);
+		            grafo.asignacionArco(origen, destino, nueva);
 		    
 		        } 
 		        
@@ -140,7 +148,7 @@ public class Main {
 	            String destino = items[1];
 	            String empresa = items[2];
 	            int cantidad = Integer.parseInt(items[3]);
-	            gr.setReserva(origen, destino, empresa, cantidad);
+	            grafo.setReserva(origen, destino, empresa, cantidad);
 	        }
 	    } catch (IOException e) {
 	        e.printStackTrace();

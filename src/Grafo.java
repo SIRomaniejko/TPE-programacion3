@@ -253,4 +253,158 @@ public class Grafo {
 		}
 		return regreso;
 	}
+	
+	public Iterator<String> recorridoMasCortoGreedy(String origen){
+		ArrayList<String> respuesta = new ArrayList<String>();
+		Object[] res = viajeroGreedy(origen);
+		LinkedList<String> viaje = (LinkedList<String>)res[0];
+		double dist = (Double)res[1];
+		for(String parte: viaje){
+			respuesta.add(parte);
+		}
+		respuesta.add("la distancia total es: " + dist + "km");
+		return respuesta.iterator();
+	}
+	
+	private Object[] viajeroGreedy(String origen){
+		double dist = 0;
+		HashSet<String> recorrido = new HashSet<String>();
+		LinkedList<String> camino = new LinkedList<String>();
+		ArrayList<String>caminoIda = new ArrayList<String>();
+		String actual = origen;
+		recorrido.add(actual);
+		camino.addLast(actual);
+		caminoIda.add(actual);
+		while(recorrido.size() != aeropuertos.size() || !actual.equals(origen)){
+			HashSet<String> adyacentes = getAdayacentes(actual);
+			for(String aeropuerto: recorrido){
+				if(!(recorrido.size() == aeropuertos.size()) || !aeropuerto.equals(origen)){
+				//de los adyacentes elimina los recorridos, y si se recorrieron todos los aeropuertos exceptua el aeropuerto de origen
+					adyacentes.remove(aeropuerto);
+				}
+				if(adyacentes.contains(origen) && dist < this.getRutaAerea(actual, origen).getDistancia()){
+					//si la distancia hacia origen es mayor que la distancia total descuenta origen de los adyacentes
+					adyacentes.remove(origen);
+				}
+			}
+			if(adyacentes.size() > 0){
+			//si tiene adyacentes
+				String adyacenteCercano = "";
+				double distanciaCercano = -1;
+				for(String adyacente: adyacentes){
+					//selecciona el mas cercano
+					double distanciaRuta = this.getRutaAerea(actual, adyacente).getDistancia();
+					if(distanciaRuta < distanciaCercano || distanciaCercano < 0){
+						adyacenteCercano = adyacente;
+						distanciaCercano = distanciaRuta;
+					}
+				}
+				while(caminoIda.indexOf(actual) < caminoIda.size()-1){
+					//crea la nueva rama en caminoIda
+					caminoIda.remove(caminoIda.size()-1);
+				}
+				dist += distanciaCercano;
+				actual = adyacenteCercano;
+				caminoIda.add(actual);
+				
+			}
+			else{
+				int anteriorNum = caminoIda.indexOf(actual)-1;
+				if(anteriorNum < 0){
+					Object[] regreso = new Object[2];
+					regreso[0] = "no hay ruta posible";
+					regreso[1] = 0;
+				}
+				else{ //esta en origen, no encontro adyacentes, pero no recorrio todos los aeropuertos
+					return null;
+					//eso significa que es imposible recorrer el grafo
+				}
+				String anterior = caminoIda.get(anteriorNum);
+				dist += this.getRutaAerea(actual, anterior).getDistancia();
+				actual = anterior;
+			}
+			recorrido.add(actual);
+			camino.addLast(actual);
+			
+		}
+		Object[] regreso = new Object[2];
+		regreso[0] = camino;
+		regreso[1] = dist;
+		return regreso;
+	}
+	
+	
+	
+	private HashSet<String> getAdayacentes(String origen){
+		HashSet<String> regreso = new HashSet<String>();
+		int x = this.identificadores.get(origen);
+		for(int y = 0; y < aeropuertos.size(); y++){
+			if(this.rutas[x][y] != null){
+				regreso.add(this.identificadorToName.get(y));
+			}
+		}
+		return regreso;
+	}
+	
+	public Iterator<String> recorridoCortoBacktracking(String origen){
+		//el backtracking para recortar accesos usa primero la solucion greedy
+		Object[]greedy = viajeroGreedy(origen);
+		ArrayList<String> solucion = new ArrayList<String>();
+		for(String parte: (LinkedList<String>)greedy[0]){
+			solucion.add(parte);
+		}
+		ArrayList<String> recorridoActual = new ArrayList<String>();
+		recorridoActual.add(origen);
+		HashSet<String> aeropuertosRecorridos = new HashSet<String>();
+		aeropuertosRecorridos.add(origen);
+		double[] distSol = new double[]{(Double)greedy[1]};
+		viajeroBack(solucion, distSol, recorridoActual, 0, aeropuertosRecorridos, new HashSet<String>(), origen, origen);
+		solucion.add(distSol[0] + "km");
+		return solucion.iterator();
+	}
+	
+	private void viajeroBack(ArrayList<String> solucionActual, double[] distSol, ArrayList<String> recorridoActual, double distActual, HashSet<String> aeropuertosRecorridos, HashSet<String> arcosRecorridos, String aeropuertoActual, String origen){
+		if(this.aeropuertos.size() == aeropuertosRecorridos.size() && aeropuertoActual.equals(origen)){
+			if(distActual < distSol[0] || distSol[0] < 0){
+				for(int x = 0; x < recorridoActual.size(); x++){
+					if(x < solucionActual.size()){
+						solucionActual.set(x, recorridoActual.get(x));
+					}
+					else{
+						solucionActual.add(recorridoActual.get(x));
+					}
+				}
+				while(solucionActual.size() != recorridoActual.size()){
+					solucionActual.remove(solucionActual.size()-1);
+				}
+				distSol[0] = distActual;
+			}
+		}
+		else{
+			HashSet<String> adyacentes = getAdayacentes(aeropuertoActual);
+			for(String adyacente: adyacentes){
+				if(!arcosRecorridos.contains(aeropuertoActual + "->" + adyacente)){
+					boolean primeraVez = false;
+					arcosRecorridos.add(aeropuertoActual + "->" + adyacente);
+					distActual += this.getRutaAerea(aeropuertoActual, adyacente).getDistancia();
+					if(!aeropuertosRecorridos.contains(adyacente)){
+						//si es la primera vez que se pasa por un vertice
+						aeropuertosRecorridos.add(adyacente);
+						primeraVez = true;
+					}
+					recorridoActual.add(adyacente);
+					if(distActual < distSol[0] || distSol[0] < 0){
+						//comprueba que el camino actual no sea mas largo que la solucion actual
+						viajeroBack(solucionActual, distSol, recorridoActual, distActual, aeropuertosRecorridos, arcosRecorridos, adyacente, origen);						
+					}
+					arcosRecorridos.remove(aeropuertoActual + "->" + adyacente);
+					distActual -= this.getRutaAerea(aeropuertoActual, adyacente).getDistancia();
+					if(primeraVez){
+						aeropuertosRecorridos.remove(adyacente);						
+					}
+					recorridoActual.remove(recorridoActual.size()-1);
+				}
+			}
+		}
+	}
 }
