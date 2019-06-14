@@ -1,14 +1,18 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 
 
 public class GrafoNoDirigido extends Grafo {
 
-	public GrafoNoDirigido(String pathRootFolder) {
-		super(pathRootFolder);
+	public GrafoNoDirigido(ArrayList<Aeropuerto> listaAeropuertos) {
+		super(listaAeropuertos);
 	}
-	protected void asignacionArco(int origen, int destino, boolean esCabotaje, double distancia, HashMap<String, Integer> aeroLineasFinal){
-		this.rutas[destino][origen] = new RutaAerea(distancia, esCabotaje, aeroLineasFinal);
-		super.asignacionArco(origen, destino, esCabotaje, distancia, aeroLineasFinal);
+	
+	protected void asignacionArco(String origen, String destino, RutaAerea nueva){
+		int indiceOrigen = identificadores.get(origen);
+		int indiceDestino = identificadores.get(destino);
+		this.rutas[indiceOrigen][indiceDestino] = nueva;
+		super.asignacionArco(origen, destino, nueva);
 	}
 	
 }

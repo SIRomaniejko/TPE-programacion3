@@ -22,80 +22,34 @@ public class Grafo {
 	RutaAerea[][] rutas;
 	
 	// aca va tu codigo del constructor //
-	public Grafo(String pathRootFolder){
-		String line = "";
-		String cvsSplitBy = ";";
-		aeropuertos = new ArrayList<Aeropuerto>();
+	
+	
+	
+	public Grafo(ArrayList<Aeropuerto> listaAeropuertos) {
+		this.aeropuertos = listaAeropuertos;
 		identificadores = new HashMap<String, Integer>();
 		identificadorToName = new HashMap<Integer, String>();
-		//carga del aeropuerto y los identificadores
-	    try (BufferedReader br = new BufferedReader(new FileReader((pathRootFolder + "Aeropuertos.csv")))) {
-			    int idAeropuerto = 0;
-		        while ((line = br.readLine()) != null) {						                    // mientras haya lineas para leer en el csv		
-		            String[] items = line.split(cvsSplitBy);
-		            String nombre = items[0];
-		            String ciudad = items[1];
-		            String pais = items[2];
-		            Aeropuerto nuevo = new Aeropuerto(nombre, ciudad, pais);
-		            aeropuertos.add(nuevo);
-		            identificadores.put(nombre, idAeropuerto);
-		            identificadorToName.put(idAeropuerto++, nombre);
-		            
-		        }
-		        rutas = new RutaAerea[idAeropuerto+1][idAeropuerto+1];
-		        
-	    }
-	    catch (IOException e) {
-		        e.printStackTrace();
-		        rutas = new RutaAerea[0][0];
-	    }
-	    //creacion de rutasAereas y su carga en la matriz ruta
-	    try (BufferedReader br = new BufferedReader(new FileReader(pathRootFolder + "Rutas.csv"))) {
-	        while ((line = br.readLine()) != null) {
-	            String[] items = line.split(cvsSplitBy);
-	            int origen = identificadores.get(items[0]);
-	            int destino = identificadores.get(items[1]);
-	            double distancia = Double.parseDouble(items[2]);
-	            boolean esCabotaje = items[3].equals("1");
-	            if(items[3] == "1"){
-	            	System.out.println("escabotaje");
-	            }
-	            String aeroLineas = items[4].replace("{","");
-	            aeroLineas = aeroLineas.replace("}","");
-	            String[] aeroLinea = aeroLineas.split(",");
-	            HashMap<String, Integer> aeroLineasFinal = new HashMap<String, Integer>();
-	            for (int x=0; x < aeroLinea.length; x++){
-	            	String[]aerolineaFinal = aeroLinea[x].split("-");
-	            	aeroLineasFinal.put(aerolineaFinal[0], Integer.parseInt(aerolineaFinal[1]));
-	            }
-	            this.asignacionArco(origen, destino, esCabotaje, distancia, aeroLineasFinal);
-	        }
-	        
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    }
-	    this.reservas = new HashMap<String, Integer>();
-	    //carga de las reservas en la lista
-	    try (BufferedReader br = new BufferedReader(new FileReader(pathRootFolder + "Reservas.csv"))) {                                                              // salteo el encabezado
-	        while ((line = br.readLine()) != null) {						                    // mientras haya lineas para leer en el csv		
-	            String[] items = line.split(cvsSplitBy);
-	            String origen = items[0];
-	            String destino = items[1];
-	            String empresa = items[2];
-	            int cantidad = Integer.parseInt(items[3]);
+		for (int i=0; i< aeropuertos.size(); i++){
+			Aeropuerto aActual = aeropuertos.get(i);
+	        identificadores.put(aActual.getNombre(), i);
+            identificadorToName.put(i, aActual.getNombre());
+		}
+		this.rutas = new RutaAerea[aeropuertos.size()][aeropuertos.size()];
+	}
+				
+	public void setReserva(String origen, String destino, String empresa, int cantidad) {	
+ 	    this.reservas = new HashMap<String, Integer>();
 	            this.reservas.put(origen+"-"+destino+"-"+empresa, cantidad);
 	            RutaAerea ruta = this.rutas[this.identificadores.get(origen)][this.identificadores.get(destino)];
 	            if(ruta != null){
 	            	ruta.restarAsientos(empresa, cantidad);
 	            }
 	        }
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    }
-	}
-	
-	protected void asignacionArco(int origen, int destino, boolean esCabotaje, double distancia, HashMap<String, Integer> aeroLineasFinal){
-		this.rutas[origen][destino] = new RutaAerea(distancia, esCabotaje, aeroLineasFinal);
+	    		
+	protected void asignacionArco(String origen, String destino,RutaAerea nueva){
+		int indiceOrigen = identificadores.get(origen);
+		int indiceDestino = identificadores.get(destino);
+		this.rutas[indiceOrigen][indiceDestino] = nueva;
 	}
 	
 	public boolean esVueloCabotaje(String origen, String destino){
@@ -110,7 +64,6 @@ public class Grafo {
 		return getRutaAerea(origen, destino) != null;
 	}
 	
-	
 	public Iterator<String> getReservas(){
 		ArrayList<String> regreso = new ArrayList<String>();
 		Set<String> keys = this.reservas.keySet();
@@ -118,6 +71,10 @@ public class Grafo {
 			regreso.add(key + "-" + this.reservas.get(key));
 		}
 		return regreso.iterator();
+	}
+	
+	public void setReservas(HashMap<String, Integer> reservas) {
+		this.reservas = reservas;
 	}
 	
 	public Iterator<String> servicio1(String origen, String destino, String aerolinea){
@@ -240,6 +197,10 @@ public class Grafo {
 		return this.rutas[this.identificadores.get(origen)][this.identificadores.get(destino)].getAerolineas();
 	}
 	
+	public HashMap getIdentificadores() {
+	    return this.identificadores;
+	}
+
 	public void generateGraph(String rootpath){
 		BufferedWriter bw = null;
 		try {
