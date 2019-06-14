@@ -11,7 +11,7 @@ public class GrafoNoDirigido extends Grafo {
 	protected void asignacionArco(String origen, String destino, RutaAerea nueva){
 		int indiceOrigen = identificadores.get(origen);
 		int indiceDestino = identificadores.get(destino);
-		this.rutas[indiceOrigen][indiceDestino] = nueva;
+		this.rutas[indiceDestino][indiceOrigen] = nueva;
 		super.asignacionArco(origen, destino, nueva);
 	}
 	

@@ -101,7 +101,7 @@ public class Main {
 	            Aeropuerto nuevo = new Aeropuerto(nombre, ciudad, pais);
 	            listaAeropuertos.add(nuevo);
 	        }
-	        Grafo g = new Grafo(listaAeropuertos);
+	        Grafo g = new GrafoNoDirigido(listaAeropuertos);
 	        return g;	
     }
     catch (IOException e) {
