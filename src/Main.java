@@ -79,7 +79,7 @@ public class Main {
 			if(!entrada.equals("esc")){
 				leerEntrada();
 			}
-		}1
+		}
 	}
 	
 	public static Grafo cargarGrafo(){
