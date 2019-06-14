@@ -9,9 +9,9 @@ import java.io.FileWriter;
 
 public class Main {
 	public static String output = "output/";
-	public static String input = "input/";
+	public static String input = "input2/";
 	public static void main(String[] args) throws IOException {
-		Grafo grafo = new Grafo(input);
+		Grafo grafo = new GrafoNoDirigido(input);
 		String entrada = "start";
 		String origen;
 		String destino;
@@ -25,7 +25,9 @@ public class Main {
 			System.out.println("3. servicio 1: verificar vuelo directo");
 			System.out.println("4. servicio 2: obtener recorridos posibles sin aerolinea");
 			System.out.println("5. servicio 3: vuelos disponibles entre dos paises");
-			System.out.println("6. generar archivo con grafo");
+			System.out.println("6. recorrer todos aeropuertos Greedy");
+			System.out.println("7. recorrer todos aeropuertos Backtracking");
+			System.out.println("create. generar archivo para visualizar grafo");
 			System.out.println("esc. cerrar el programa");
 			entrada = leerEntrada();
 			switch(entrada){
@@ -61,6 +63,18 @@ public class Main {
 				System.out.println("entrar pais destino");
 				paisB = leerEntrada();
 				printRespuesta(grafo.servicio3(paisA, paisB));
+				break;
+			case "6":
+				System.out.println("entrar origen");
+				origen = leerEntrada();
+				printRespuesta(grafo.recorridoMasCortoGreedy(origen));
+				break;
+			case "7":
+				System.out.println("entrar origen");
+				origen = leerEntrada();
+				printRespuesta(grafo.recorridoCortoBacktracking(origen));
+			case "create":
+				grafo.generateGraph(output);
 			}
 			if(!entrada.equals("esc")){
 				leerEntrada();
